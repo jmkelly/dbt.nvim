@@ -4,16 +4,51 @@ local M = {}
 
 local uv = vim.loop
 
-local function create_win(bufnr, opts)
+M.config = {
+	width_ratio = 1.0, -- Full width
+	height_ratio = 0.25, -- Take up 25% of screen height
+	row_ratio = 0.75, -- Position at 75% from top (bottom area)
+	col_ratio = 0.0, -- Start from left edge
+	border = "rounded",
+	log_path = vim.fn.stdpath("log") .. "dbt.log",
+}
+
+function M.setup(opts)
+	-- Modified terminal configuration for bottom placement
+
+	M.config = vim.tbl_extend("force", M.config, opts or {})
+
+	vim.api.nvim_create_user_command("DotnetLogs", function()
+		M.show_log()
+	end, { desc = "Open the dbt dotnet.log file in a new buffer" })
+
+	vim.api.nvim_create_user_command("DotnetBuild", function()
+		M.build_no_restore()
+	end, { desc = "Build dotnet project (no restore)" })
+
+	vim.api.nvim_create_user_command("DotnetRestore", function()
+		M.restore()
+	end, { desc = "Restore dotnet project" })
+
+	vim.api.nvim_create_user_command("DotnetTestNearest", function()
+		M.test_nearest()
+	end, { desc = "Test nearest method with dotnet test (no restore)" })
+
+	vim.keymap.set("n", "<leader>db", M.build_no_restore(), { desc = "[D]otnet [B]uild (no restore)" })
+	vim.keymap.set("n", "<leader>dr", M.restore(), { desc = "[D]otnet [R]estore" })
+	vim.keymap.set("n", "<leader>dt", M.test_nearest(), { desc = "[D]otnet [T]est nearest method (no restore)" })
+end
+
+local function create_win(bufnr)
 	-- First create the window with focus
 	local win = vim.api.nvim_open_win(bufnr, true, {
 		relative = "editor",
-		width = math.floor(vim.o.columns * opts.width_ratio),
-		height = math.floor(vim.o.lines * opts.height_ratio),
-		row = math.floor(vim.o.lines * opts.row_ratio),
-		col = math.floor(vim.o.columns * opts.col_ratio),
+		width = math.floor(vim.o.columns * M.config.width_ratio),
+		height = math.floor(vim.o.lines * M.config.height_ratio),
+		row = math.floor(vim.o.lines * M.config.row_ratio),
+		col = math.floor(vim.o.columns * M.config.col_ratio),
 		style = "minimal",
-		border = opts.border,
+		border = M.config.border,
 	})
 
 	return win
@@ -27,7 +62,7 @@ local function log_to_file(...)
 	end
 	msg = os.date("%Y-%m-%d %H:%M:%S") .. ": " .. msg .. "\n"
 
-	local file = io.open(opts.log_path, "a")
+	local file = io.open(M.config.log_path, "a")
 	if file then
 		file:write(msg)
 		file:close()
@@ -226,13 +261,13 @@ local function get_nearest_test_name()
 end
 
 -- Modified floating terminal runner that doesn't steal focus
-local function run_in_terminal(cmd, opts)
+local function run_in_terminal(cmd)
 	-- Store the current window
 	local current_win = vim.api.nvim_get_current_win()
 
 	-- Create buffer and window
 	local bufnr = vim.api.nvim_create_buf(false, true)
-	local win = create_win(bufnr, opts)
+	local win = create_win(bufnr)
 
 	-- Run the command in the terminal buffer
 	vim.fn.termopen(cmd, {
@@ -261,28 +296,28 @@ local function run_in_terminal(cmd, opts)
 	vim.api.nvim_set_current_win(current_win)
 end
 
-function M.build_no_restore(opts)
-	run_in_terminal("dotnet build --no-restore", opts)
+function M.build_no_restore()
+	run_in_terminal("dotnet build --no-restore", M.config)
 end
 
-function M.restore(opts)
-	run_in_terminal("dotnet restore", opts)
+function M.restore()
+	run_in_terminal("dotnet restore", M.config)
 end
 
-function M.test_nearest(opts)
+function M.test_nearest()
 	local test_name = get_nearest_test_name()
 	if not test_name then
 		vim.notify("Could not determine nearest test method.", vim.log.levels.WARN)
 		return
 	end
 	local cmd = "dotnet test --no-restore --filter FullyQualifiedName~" .. test_name
-	run_in_terminal(cmd, opts)
+	run_in_terminal(cmd, M.config)
 end
 
-function M.show_log(opts)
-	local log_path = opts.log_path -- Read the log file lines
+function M.show_log()
+	local log_path = M.config.log_path -- Read the log file lines
 	local lines = {}
-	local file = io.open(opts.log_path, "r")
+	local file = io.open(M.config.log_path, "r")
 	if file then
 		for line in file:lines() do
 			table.insert(lines, line)
@@ -299,45 +334,5 @@ function M.show_log(opts)
 	vim.bo[buf].filetype = "log"
 	create_win(buf)
 end
-
-function M.setup(opts)
-	-- Modified terminal configuration for bottom placement
-
-	local merged_options = vim.tbl_extend("force", M.config, opts or {})
-
-	vim.api.nvim_create_user_command("DotnetLogs", function()
-		M.show_log(merged_options)
-	end, { desc = "Open the dbt dotnet.log file in a new buffer" })
-
-	vim.api.nvim_create_user_command("DotnetBuild", function()
-		M.build_no_restore(merged_options)
-	end, { desc = "Build dotnet project (no restore)" })
-
-	vim.api.nvim_create_user_command("DotnetRestore", function()
-		M.restore(merged_options)
-	end, { desc = "Restore dotnet project" })
-
-	vim.api.nvim_create_user_command("DotnetTestNearest", function()
-		M.test_nearest(merged_options)
-	end, { desc = "Test nearest method with dotnet test (no restore)" })
-
-	vim.keymap.set("n", "<leader>db", M.build_no_restore(merged_options), { desc = "[D]otnet [B]uild (no restore)" })
-	vim.keymap.set("n", "<leader>dr", M.restore(merged_options), { desc = "[D]otnet [R]estore" })
-	vim.keymap.set(
-		"n",
-		"<leader>dt",
-		M.test_nearest(merged_options),
-		{ desc = "[D]otnet [T]est nearest method (no restore)" }
-	)
-end
-
-M.config = {
-	width_ratio = 1.0, -- Full width
-	height_ratio = 0.25, -- Take up 25% of screen height
-	row_ratio = 0.75, -- Position at 75% from top (bottom area)
-	col_ratio = 0.0, -- Start from left edge
-	border = "rounded",
-	log_path = vim.fn.stdpath("log") .. "dbt.log",
-}
 
 return M
