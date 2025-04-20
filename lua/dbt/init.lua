@@ -34,9 +34,9 @@ function M.setup(opts)
 		M.test_nearest()
 	end, { desc = "Test nearest method with dotnet test (no restore)" })
 
-	vim.keymap.set("n", "<leader>db", M.build_no_restore(), { desc = "[D]otnet [B]uild (no restore)" })
-	vim.keymap.set("n", "<leader>dr", M.restore(), { desc = "[D]otnet [R]estore" })
-	vim.keymap.set("n", "<leader>dt", M.test_nearest(), { desc = "[D]otnet [T]est nearest method (no restore)" })
+	vim.keymap.set("n", "<leader>db", M.build_no_restore, { desc = "[D]otnet [B]uild (no restore)" })
+	vim.keymap.set("n", "<leader>dr", M.restore, { desc = "[D]otnet [R]estore" })
+	vim.keymap.set("n", "<leader>dt", M.test_nearest, { desc = "[D]otnet [T]est nearest method (no restore)" })
 end
 
 local function create_win(bufnr)
