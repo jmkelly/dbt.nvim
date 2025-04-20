@@ -299,16 +299,19 @@ function M.show_log(opts)
 	create_win(buf)
 end
 
+local options = {
+	width_ratio = 1.0, -- Full width
+	height_ratio = 0.25, -- Take up 25% of screen height
+	row_ratio = 0.75, -- Position at 75% from top (bottom area)
+	col_ratio = 0.0, -- Start from left edge
+	border = "rounded",
+	log_path = vim.fn.stdpath("log") .. "dbt.log",
+}
+
+M.opts = options
+
 function M.setup(opts)
 	-- Modified terminal configuration for bottom placement
-	local options = {
-		width_ratio = 1.0, -- Full width
-		height_ratio = 0.25, -- Take up 25% of screen height
-		row_ratio = 0.75, -- Position at 75% from top (bottom area)
-		col_ratio = 0.0, -- Start from left edge
-		border = "rounded",
-		log_path = vim.fn.stdpath("log") .. "dbt.log",
-	}
 
 	local merged_options = vim.tbl_extend("force", opts, options or {})
 
