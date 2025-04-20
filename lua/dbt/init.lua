@@ -299,21 +299,10 @@ function M.show_log(opts)
 	create_win(buf)
 end
 
-local options = {
-	width_ratio = 1.0, -- Full width
-	height_ratio = 0.25, -- Take up 25% of screen height
-	row_ratio = 0.75, -- Position at 75% from top (bottom area)
-	col_ratio = 0.0, -- Start from left edge
-	border = "rounded",
-	log_path = vim.fn.stdpath("log") .. "dbt.log",
-}
-
-M.opts = options
-
 function M.setup(opts)
 	-- Modified terminal configuration for bottom placement
 
-	local merged_options = vim.tbl_extend("force", opts, options or {})
+	local merged_options = vim.tbl_extend("force", M.config, options or {})
 
 	vim.api.nvim_create_user_command("DotnetLogs", function()
 		M.show_log(merged_options)
@@ -340,5 +329,14 @@ function M.setup(opts)
 		{ desc = "[D]otnet [T]est nearest method (no restore)" }
 	)
 end
+
+M.config = {
+	width_ratio = 1.0, -- Full width
+	height_ratio = 0.25, -- Take up 25% of screen height
+	row_ratio = 0.75, -- Position at 75% from top (bottom area)
+	col_ratio = 0.0, -- Start from left edge
+	border = "rounded",
+	log_path = vim.fn.stdpath("log") .. "dbt.log",
+}
 
 return M
