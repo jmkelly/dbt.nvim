@@ -1,7 +1,8 @@
 --helper functions specific to dotnet
-local uv = vim.loop
 
 local M = {}
+
+local uv = vim.loop
 
 local function create_win(bufnr, opts)
 	-- First create the window with focus
@@ -26,12 +27,12 @@ local function log_to_file(...)
 	end
 	msg = os.date("%Y-%m-%d %H:%M:%S") .. ": " .. msg .. "\n"
 
-	local file = io.open(log_path, "a")
+	local file = io.open(opts.log_path, "a")
 	if file then
 		file:write(msg)
 		file:close()
 	else
-		vim.notify("Failed to open log file: " .. log_path, vim.log.levels.ERROR)
+		vim.notify("Failed to open log file: " .. M.config.log_path, vim.log.levels.ERROR)
 	end
 end
 
@@ -302,7 +303,7 @@ end
 function M.setup(opts)
 	-- Modified terminal configuration for bottom placement
 
-	local merged_options = vim.tbl_extend("force", M.config, options or {})
+	local merged_options = vim.tbl_extend("force", M.config, opts or {})
 
 	vim.api.nvim_create_user_command("DotnetLogs", function()
 		M.show_log(merged_options)
