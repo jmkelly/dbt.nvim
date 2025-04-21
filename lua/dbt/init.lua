@@ -309,6 +309,7 @@ function M.test_nearest()
 	if not test_name then
 		vim.notify("Could not determine nearest test method. Running tests on project", vim.log.levels.WARN)
 		run_in_terminal("dotnet test --no-restore")
+		return
 	end
 	local cmd = "dotnet test --no-restore --filter FullyQualifiedName~" .. test_name
 	run_in_terminal(cmd)
