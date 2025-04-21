@@ -297,21 +297,21 @@ local function run_in_terminal(cmd)
 end
 
 function M.build_no_restore()
-	run_in_terminal("dotnet build --no-restore", M.config)
+	run_in_terminal("dotnet build --no-restore")
 end
 
 function M.restore()
-	run_in_terminal("dotnet restore", M.config)
+	run_in_terminal("dotnet restore")
 end
 
 function M.test_nearest()
 	local test_name = get_nearest_test_name()
 	if not test_name then
-		vim.notify("Could not determine nearest test method.", vim.log.levels.WARN)
-		return
+		vim.notify("Could not determine nearest test method. Running tests on project", vim.log.levels.WARN)
+		run_in_terminal("dotnet test --no-restore")
 	end
 	local cmd = "dotnet test --no-restore --filter FullyQualifiedName~" .. test_name
-	run_in_terminal(cmd, M.config)
+	run_in_terminal(cmd)
 end
 
 function M.show_log()
