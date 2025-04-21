@@ -3,6 +3,9 @@
 A lightweight Neovim plugin to streamline .NET development workflows. Provides commands and keybindings to quickly build, restore, and test your .NET projects, with a floating terminal UI. Stands for [D]otnet [Build] and [T]est.
 
 ---
+![dbt](https://github.com/user-attachments/assets/aab7700b-eda1-4be7-b3a7-81026f758bf5)
+---
+
 
 ## ✨ Features
 
