@@ -40,7 +40,6 @@ require("dbt").setup({
   row_ratio = 0.75,
   col_ratio = 0.0,
   border = "rounded",
-  log_path = vim.fn.stdpath("log") .. "dbt.log",
   keymaps = {
     enable = true,
     mappings = {
@@ -72,8 +71,8 @@ require("dbt").setup({
 
 
 Command | Description
-:DotnetLogs | Open the dotnet.log file in a floating window
 :DotnetBuild | Run dotnet build without restore
+:DotnetBuildAndRestore | Run dotnet build
 :DotnetRestore | Run dotnet restore
 :DotnetTestNearest | Run the nearest test method with dotnet test
 
@@ -83,6 +82,7 @@ Command | Description
 
 Keybinding	Action
 <leader>db	Build project (no restore)
+<leader>dbt	Build project
 <leader>dr	Restore project
 <leader>dt	Test nearest method (no restore)
 
