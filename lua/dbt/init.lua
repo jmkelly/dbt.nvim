@@ -1,30 +1,34 @@
---helper functions specific to dotnet
-
 local M = {}
 
 local uv = vim.loop
 
 M.config = {
-	width_ratio = 1.0, -- Full width
-	height_ratio = 0.25, -- Take up 25% of screen height
-	row_ratio = 0.75, -- Position at 75% from top (bottom area)
-	col_ratio = 0.0, -- Start from left edge
+	width_ratio = 1.0,
+	height_ratio = 0.25,
+	row_ratio = 0.75,
+	col_ratio = 0.0,
 	border = "rounded",
-	log_path = vim.fn.stdpath("log") .. "dbt.log",
+	keymaps = {
+		enable = true,
+		mappings = {
+			build = "<leader>db",
+			restore = "<leader>dr",
+			build_and_restore = "<leader>dbr",
+			test_nearest = "<leader>dt",
+		},
+	},
 }
 
 function M.setup(opts)
-	-- Modified terminal configuration for bottom placement
-
-	M.config = vim.tbl_extend("force", M.config, opts or {})
-
-	vim.api.nvim_create_user_command("DotnetLogs", function()
-		M.show_log()
-	end, { desc = "Open the dbt dotnet.log file in a new buffer" })
+	M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
 	vim.api.nvim_create_user_command("DotnetBuild", function()
 		M.build_no_restore()
 	end, { desc = "Build dotnet project (no restore)" })
+
+	vim.api.nvim_create_user_command("DotnetBuildAndRestore", function()
+		M.build_no_restore()
+	end, { desc = "Build dotnet project" })
 
 	vim.api.nvim_create_user_command("DotnetRestore", function()
 		M.restore()
@@ -34,9 +38,13 @@ function M.setup(opts)
 		M.test_nearest()
 	end, { desc = "Test nearest method with dotnet test (no restore)" })
 
-	vim.keymap.set("n", "<leader>db", M.build_no_restore, { desc = "[D]otnet [B]uild (no restore)" })
-	vim.keymap.set("n", "<leader>dr", M.restore, { desc = "[D]otnet [R]estore" })
-	vim.keymap.set("n", "<leader>dt", M.test_nearest, { desc = "[D]otnet [T]est nearest method (no restore)" })
+	if M.config.keymaps.enable then
+		local km = M.config.keymaps.mappings
+		vim.keymap.set("n", km.build, M.build_no_restore, { desc = "[D]otnet [B]uild (no restore)" })
+		vim.keymap.set("n", km.build_and_restore, M.build, { desc = "[D]otnet [B]uild and [R]estore" })
+		vim.keymap.set("n", km.restore, M.restore, { desc = "[D]otnet [R]estore" })
+		vim.keymap.set("n", km.test_nearest, M.test_nearest, { desc = "[D]otnet [T]est nearest method (no restore)" })
+	end
 end
 
 local function create_win(bufnr)
@@ -52,23 +60,6 @@ local function create_win(bufnr)
 	})
 
 	return win
-end
-
-local function log_to_file(...)
-	local msg = ""
-	for i = 1, select("#", ...) do
-		local arg = select(i, ...)
-		msg = msg .. vim.inspect(arg) .. " "
-	end
-	msg = os.date("%Y-%m-%d %H:%M:%S") .. ": " .. msg .. "\n"
-
-	local file = io.open(M.config.log_path, "a")
-	if file then
-		file:write(msg)
-		file:close()
-	else
-		vim.notify("Failed to open log file: " .. M.config.log_path, vim.log.levels.ERROR)
-	end
 end
 
 local function find_csproj_path(start_path)
@@ -296,6 +287,10 @@ local function run_in_terminal(cmd)
 	vim.api.nvim_set_current_win(current_win)
 end
 
+function M.build()
+	run_in_terminal("dotnet build")
+end
+
 function M.build_no_restore()
 	run_in_terminal("dotnet build --no-restore")
 end
@@ -313,27 +308,6 @@ function M.test_nearest()
 	end
 	local cmd = "dotnet test --no-restore --filter FullyQualifiedName~" .. test_name
 	run_in_terminal(cmd)
-end
-
-function M.show_log()
-	local log_path = M.config.log_path -- Read the log file lines
-	local lines = {}
-	local file = io.open(M.config.log_path, "r")
-	if file then
-		for line in file:lines() do
-			table.insert(lines, line)
-		end
-		file:close()
-	else
-		vim.notify("Log file not found: " .. log_path, vim.log.levels.WARN)
-		return
-	end
-
-	-- Create a new scratch buffer
-	local buf = vim.api.nvim_create_buf(false, true)
-	vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-	vim.bo[buf].filetype = "log"
-	create_win(buf)
 end
 
 return M

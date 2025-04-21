@@ -1,0 +1,83 @@
+*dbt.txt*    Plugin for .NET workflows in Neovim
+
+==============================================================================
+INTRODUCTION                                                     *dbt*
+
+The `dbt.nvim` plugin provides utilities for .NET development inside Neovim.
+It includes commands for building, restoring, and testing .NET projects. 
+
+==============================================================================
+COMMANDS                                                         *dbt-commands*
+
+The following user commands are available:
+
+  :DotnetBuild            Run `dotnet build` (without restore)
+  :DotnetBuildAndRestore  Run `dotnet build`
+  :DotnetRestore          Run `dotnet restore`
+  :DotnetTestNearest      Run the nearest test using `dotnet test` (no restore)
+
+==============================================================================
+CONFIGURATION                                                    *dbt-setup*
+
+Configure the plugin using:
+
+>
+  require("dbt").setup(opts)
+<
+
+The following options are available:
+
+| Option         | Description                                       | Default        |
+|----------------|---------------------------------------------------|----------------|
+| width_ratio    | Width of floating terminal as a screen ratio     | `1.0`          |
+| height_ratio   | Height of terminal as a screen ratio             | `0.25`         |
+| row_ratio      | Vertical position as a screen ratio              | `0.75`         |
+| col_ratio      | Horizontal position as a screen ratio            | `0.0`          |
+| border         | Border style of the floating window              | `"rounded"`    |
+| keymaps.enable | Enable default keybindings                        | `true`         |
+| keymaps.mappings.build        | Keymap for `dotnet build`         | `<leader>db`   |
+| keymaps.mappings.restore      | Keymap for `dotnet restore`       | `<leader>dr`   |
+| keymaps.mappings.test_nearest| Keymap for `dotnet test`           | `<leader>dt`   |
+
+To disable default keybindings:
+
+>
+  require("dbt").setup({
+    keymaps = {
+      enable = false,
+    }
+  })
+<
+
+==============================================================================
+DEFAULT KEYBINDINGS                                              *dbt-keymaps*
+
+The following keymaps are enabled by default if `keymaps.enable = true`:
+
+| Mapping        | Action                             |
+|----------------|--------------------------------------|
+| `<leader>db`   | Build project (no restore)           |
+| `<leader>dbt`  | Build project		      |
+| `<leader>dr`   | Restore project                      |
+| `<leader>dt`   | Test nearest method (no restore)     |
+
+==============================================================================
+REQUIREMENTS                                                     *dbt-requirements*
+
+- .NET SDK installed and accessible via `dotnet`
+- Neovim 10.4 or newer
+
+==============================================================================
+LICENSE                                                          *dbt-license*
+
+MIT License
+
+==============================================================================
+AUTHOR                                                           *dbt-author*
+
+Created by [James Kelly]  
+GitHub: https://github.com/jmktlly/dbt.nvim
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
+

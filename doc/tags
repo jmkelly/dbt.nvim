@@ -1,0 +1,8 @@
+dbt	dbt.txt	/*dbt*
+dbt-author	dbt.txt	/*dbt-author*
+dbt-commands	dbt.txt	/*dbt-commands*
+dbt-keymaps	dbt.txt	/*dbt-keymaps*
+dbt-license	dbt.txt	/*dbt-license*
+dbt-requirements	dbt.txt	/*dbt-requirements*
+dbt-setup	dbt.txt	/*dbt-setup*
+dbt.txt	dbt.txt	/*dbt.txt*
