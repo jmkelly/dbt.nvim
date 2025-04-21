@@ -57,8 +57,6 @@ The following keymaps are enabled by default if `keymaps.enable = true`:
 | Mapping        | Action                             |
 |----------------|--------------------------------------|
 | `<leader>db`   | Build project (no restore)           |
-| `<leader>dbt`  | Build project		      |
-| `<leader>dr`   | Restore project                      |
 | `<leader>dt`   | Test nearest method (no restore)     |
 
 ==============================================================================

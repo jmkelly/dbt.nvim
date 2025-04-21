@@ -12,8 +12,6 @@ M.config = {
 		enable = true,
 		mappings = {
 			build = "<leader>db",
-			restore = "<leader>dr",
-			build_and_restore = "<leader>dbr",
 			test_nearest = "<leader>dt",
 		},
 	},
@@ -41,8 +39,6 @@ function M.setup(opts)
 	if M.config.keymaps.enable then
 		local km = M.config.keymaps.mappings
 		vim.keymap.set("n", km.build, M.build_no_restore, { desc = "[D]otnet [B]uild (no restore)" })
-		vim.keymap.set("n", km.build_and_restore, M.build, { desc = "[D]otnet [B]uild and [R]estore" })
-		vim.keymap.set("n", km.restore, M.restore, { desc = "[D]otnet [R]estore" })
 		vim.keymap.set("n", km.test_nearest, M.test_nearest, { desc = "[D]otnet [T]est nearest method (no restore)" })
 	end
 end

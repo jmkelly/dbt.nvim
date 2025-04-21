@@ -44,7 +44,6 @@ require("dbt").setup({
     enable = true,
     mappings = {
       build = "<leader>db",
-      restore = "<leader>dr",
       test_nearest = "<leader>dt",
     },
   },
@@ -82,8 +81,6 @@ Command | Description
 
 Keybinding	Action
 <leader>db	Build project (no restore)
-<leader>dbt	Build project
-<leader>dr	Restore project
 <leader>dt	Test nearest method (no restore)
 
     💡 Keymaps are fully configurable via setup().
