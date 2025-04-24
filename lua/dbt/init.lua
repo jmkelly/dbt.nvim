@@ -13,7 +13,6 @@ M.config = {
 		mappings = {
 			build = "<leader>db",
 			test_nearest = "<leader>dt",
-			run = "<leader>dr",
 		},
 	},
 }
@@ -45,7 +44,6 @@ function M.setup(opts)
 		local km = M.config.keymaps.mappings
 		vim.keymap.set("n", km.build, M.build_no_restore, { desc = "[D]otnet [B]uild (no restore)" })
 		vim.keymap.set("n", km.test_nearest, M.test_nearest, { desc = "[D]otnet [T]est nearest method (no restore)" })
-		vim.keymap.set("n", km.run, M.run, { desc = "[D]otnet [R]un" })
 	end
 end
 
