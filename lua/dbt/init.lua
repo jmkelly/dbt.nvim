@@ -13,6 +13,7 @@ M.config = {
 		mappings = {
 			build = "<leader>db",
 			test_nearest = "<leader>dt",
+			run = "<leader>dr",
 		},
 	},
 }
@@ -36,10 +37,15 @@ function M.setup(opts)
 		M.test_nearest()
 	end, { desc = "Test nearest method with dotnet test (no restore)" })
 
+	vim.api.nvim_create_user_command("DotnetRun", function()
+		M.run()
+	end, { desc = "Run dotnet project" })
+
 	if M.config.keymaps.enable then
 		local km = M.config.keymaps.mappings
 		vim.keymap.set("n", km.build, M.build_no_restore, { desc = "[D]otnet [B]uild (no restore)" })
 		vim.keymap.set("n", km.test_nearest, M.test_nearest, { desc = "[D]otnet [T]est nearest method (no restore)" })
+		vim.keymap.set("n", km.run, M.run, { desc = "[D]otnet [R]un" })
 	end
 end
 
@@ -293,6 +299,10 @@ end
 
 function M.restore()
 	run_in_terminal("dotnet restore")
+end
+
+function M.run()
+	run_in_terminal("dotnet run")
 end
 
 function M.test_nearest()
